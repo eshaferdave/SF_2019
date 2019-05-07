@@ -15,10 +15,10 @@ base_dir = '/sys/bus/w1/devices/'
 device_folders = glob.glob(base_dir + '28*')
 #device_file = device_folder + '/w1_slave'
 
-print(glob.glob(base_dir + '28*'))
+#print(glob.glob(base_dir + '28*'))
 
 def read_temp_raw(sensor):
-    device_file = device_folder[sensor] + '/w1_slave'
+    device_file = device_folders[sensor] + '/w1_slave'
     f = open(device_file, 'r')
     lines = f.readlines()
     f.close()
@@ -52,8 +52,8 @@ def ParseCmdLine():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-s", "--sensor", help="Number value of the sensor to use (0-3)", default=0)
     args = parser.parse_args()
-    if args.address not in range(3):
-        print("Invalid sensor")
+    if int(args.sensor) not in range(4):
+        print("ERROR: Invalid sensor")
         return None
     return args
 
@@ -61,9 +61,11 @@ def ParseCmdLine():
 def main():
 
     args = ParseCmdLine()
+    if not args:
+        return 1
 
     for i in range(360):
-        print("{:>3}, {:.3f}".format(time_offset(), read_temp(args.sensor)))
+        print("{:>3}, {:.3f}".format(time_offset(), read_temp(int(args.sensor))))
         sys.stdout.flush()
         time.sleep(5)
 
